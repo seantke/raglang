@@ -1,145 +1,162 @@
-# raglang
+# Raglang
 
 ## ✅ Phase 1: Sentence Breakdown MVP (English → Korean)
 
-🔧 Goal: Translate an English sentence, tokenize both sides, tag POS/morphology, and align word pairs in a UI.
+> 🔧 Goal: Translate an English sentence, tokenize both sides, tag POS/morphology, and align word pairs in a UI.
 
-- [ ] Scaffold local project folder
-  - [ ] Create virtual environment
-  - [ ] Create src/, frontend/, models/, data/, scripts/ folders
-  - [ ] Set up Poetry or requirements.txt
-- [ ] Backend API using FastAPI
-  - [ ] /translate: returns Korean sentence
-  - [ ] /analyze: returns tokenized + POS-tagged breakdown of both English and Korean
-  - [ ] /align: returns token alignment
-  - [ ] /full_breakdown: returns structured JSON for full UI display
-- [ ] Frontend UI using Open WebUI or custom HTML/JS
-  - [ ] Sentence input (English)
-  - [ ] Output table: side-by-side English and Korean tokens
-  - [ ] Visual link arrows between English and Korean tokens
-- [ ] Translation model
-  - [ ] facebook/nllb-200-distilled-600M — multilingual, small Memory: ~2.5 GB VRAM, ~5–6 GB RAM
-  - [ ] OR Helsinki-NLP/opus-mt-en-ko — faster, smaller Memory: ~1–2 GB RAM
-- [ ] Tokenization + POS tagging
-  - [ ] English: spaCy en_core_web_sm
-  - [ ] Korean: KoNLPy + Okt or Mecab
-  - [ ] Optional: khaiii or stanza for richer morphology (RAM: 1–2 GB)
-- [ ] Word alignment
-  - [ ] Use awesome-align or heuristics with attention matrix
-- [ ] Optional: Fine-tune later if needed
+* [ ] **Scaffold local project folder**
+
+  * [ ] Create virtual environment
+  * [ ] Create `src/`, `frontend/`, `models/`, `data/`, `scripts/` folders
+  * [ ] Set up Poetry or `requirements.txt`
+
+* [ ] **Backend API using FastAPI**
+
+  * [ ] `/translate`: returns Korean sentence
+  * [ ] `/analyze`: returns tokenized + POS-tagged breakdown of both English and Korean
+  * [ ] `/align`: returns token alignment
+  * [ ] `/full_breakdown`: returns structured JSON for full UI display
+
+* [ ] **Frontend UI using Open WebUI or custom HTML/JS**
+
+  * [ ] Sentence input (English)
+  * [ ] Output table: side-by-side English and Korean tokens
+  * [ ] Visual link arrows between English and Korean tokens
+
+* [ ] **Translation model**
+
+  * [ ] ✅ `facebook/nllb-200-distilled-600M` — multilingual, small
+
+    * Memory: \~2.5 GB VRAM, \~5–6 GB RAM
+  * [ ] OR `Helsinki-NLP/opus-mt-en-ko` — faster, smaller
+
+    * Memory: \~1–2 GB RAM
+
+* [ ] **Tokenization + POS tagging**
+
+  * [ ] English: spaCy `en_core_web_sm`
+  * [ ] Korean: KoNLPy + `Okt` or `Mecab`
+
+    * Optional: `khaiii` or `stanza` for richer morphology (RAM: 1–2 GB)
+
+* [ ] **Word alignment**
+
+  * [ ] Use `awesome-align` or heuristics with attention matrix
+
+    * Optional: Fine-tune later if needed
+
+---
 
 ## ✅ Phase 2: Add Local Vector Store (ChromaDB)
 
-🧠 Goal: Store translated/analyzed sentences + embeddings locally for RAG search
+> 🧠 Goal: Store translated/analyzed sentences + embeddings locally for RAG search
 
- Set up ChromaDB
+* [ ] Set up ChromaDB
 
- Use persistent local DB mode (not in-memory)
+  * [ ] Use persistent local DB mode (not in-memory)
+  * [ ] Define schema: sentence, lang, tokens, POS tags, timestamp, embedding
 
- Define schema: sentence, lang, tokens, POS tags, timestamp, embedding
+* [ ] Embed sentences using:
 
- Embed sentences using:
+  * ✅ `intfloat/multilingual-e5-large-instruct` (best multilingual embedding model as of 2025)
 
-✅ intfloat/multilingual-e5-large-instruct (best multilingual embedding model as of 2025)
+    * Memory: 7–8 GB RAM, \~4 GB VRAM for GPU inference (or 12+ GB RAM CPU)
+    * [ ] Sentence-level embedding
+    * [ ] Optionally: embed tokens for fine-grained retrieval
 
-Memory: 7–8 GB RAM, ~4 GB VRAM for GPU inference (or 12+ GB RAM CPU)
+* [ ] Store all sentences + metadata in Chroma:
 
- Sentence-level embedding
+  * [ ] English sentence
+  * [ ] Korean sentence
+  * [ ] Token breakdowns
+  * [ ] POS/morph/mapping
+  * [ ] Embedding
 
- Optionally: embed tokens for fine-grained retrieval
+* [ ] Implement `/store` and `/query` endpoints
 
- Store all sentences + metadata in Chroma:
+* [ ] UI: Add history sidebar or recall search bar
 
- English sentence
+---
 
- Korean sentence
+## ✅ Phase 3: Add Local LLM for Context-Aware Tutor (RAG)
 
- Token breakdowns
+> 🧠 Goal: Ask questions like “Why is this verb conjugated?” or “What’s another way to say this?”
 
- POS/morph/mapping
+* [ ] Choose and run a **local LLM**:
 
- Embedding
+  * ✅ `mistral-7b-instruct.Q4_K_M.gguf` (Good quality, 4-bit quant)
 
- Implement /store and /query endpoints
+    * Memory: \~6–8 GB RAM (CPU) or \~4.5–6 GB VRAM (GPU)
+  * Alternative: `phi-2` or `tinyllama` (2–4 GB RAM)
 
- UI: Add history sidebar or recall search bar
+* [ ] Use `llama-cpp-python` or `llm` (from Open WebUI) backend
 
-✅ Phase 3: Add Local LLM for Context-Aware Tutor (RAG)
-🧠 Goal: Ask questions like “Why is this verb conjugated?” or “What’s another way to say this?”
+  * [ ] Load with context window > 4k if possible
 
- Choose and run a local LLM:
+* [ ] Add retrieval-augmented generation (RAG):
 
-✅ mistral-7b-instruct.Q4_K_M.gguf (Good quality, 4-bit quant)
+  * [ ] Query ChromaDB for similar past sentences
+  * [ ] Inject relevant results into prompt for local LLM
+  * [ ] Create `/tutor` endpoint (POST: question + context)
 
-Memory: ~6–8 GB RAM (CPU) or ~4.5–6 GB VRAM (GPU)
+* [ ] UI: Add chat sidebar for grammar/tutor questions
 
-Alternative: phi-2 or tinyllama (2–4 GB RAM)
+---
 
- Use llama-cpp-python or llm (from Open WebUI) backend
+## ✅ Phase 4: Active Recall and Quiz Features
 
- Load with context window > 4k if possible
+> 🎓 Goal: Let users practice and recall previous sentences, especially weak areas
 
- Add retrieval-augmented generation (RAG):
+* [ ] Track usage / timestamps on sentence entries
 
- Query ChromaDB for similar past sentences
+* [ ] Implement spaced repetition scheduling (Leitner-like logic)
 
- Inject relevant results into prompt for local LLM
+* [ ] Create endpoints:
 
- Create /tutor endpoint (POST: question + context)
+  * [ ] `/quiz/gap-fill`
+  * [ ] `/quiz/translate`
+  * [ ] `/quiz/conjugate`
+  * [ ] `/quiz/order` (scrambled word ordering)
 
- UI: Add chat sidebar for grammar/tutor questions
+* [ ] UI: Add quiz mode toggle + options
 
-✅ Phase 4: Active Recall and Quiz Features
-🎓 Goal: Let users practice and recall previous sentences, especially weak areas
+---
 
- Track usage / timestamps on sentence entries
+## ✅ Phase 5: Speech and Audio Add-on (Optional)
 
- Implement spaced repetition scheduling (Leitner-like logic)
+> 🔊 Goal: Enable listening + speaking support using local audio models
 
- Create endpoints:
+* [ ] Add speech input:
 
- /quiz/gap-fill
+  * ✅ `whisper.cpp` or `faster-whisper`
 
- /quiz/translate
+    * RAM: 2–3 GB (`base`), 4–6 GB (`medium`)
+  * [ ] Endpoint: `/transcribe`
 
- /quiz/conjugate
+* [ ] Add speech output:
 
- /quiz/order (scrambled word ordering)
+  * [ ] Use `TTS` models like `coqui-ai/TTS`, `piper`, or `OpenTTS`
 
- UI: Add quiz mode toggle + options
+    * Korean TTS models available in `piper`
 
-✅ Phase 5: Speech and Audio Add-on (Optional)
-🔊 Goal: Enable listening + speaking support using local audio models
+* [ ] UI:
 
- Add speech input:
+  * [ ] Add audio record + playback buttons
+  * [ ] Optionally show waveform or pronunciation feedback
 
-✅ whisper.cpp or faster-whisper
-
-RAM: 2–3 GB (base), 4–6 GB (medium)
-
- Endpoint: /transcribe
-
- Add speech output:
-
- Use TTS models like coqui-ai/TTS, piper, or OpenTTS
-
-Korean TTS models available in piper
-
- UI:
-
- Add audio record + playback buttons
-
- Optionally show waveform or pronunciation feedback
+---
 
 ## ✅ Optional Phase 6: Visual Grammar and Flow Charts
 
-🎨 Goal: Visualize sentence structure or grammar as trees/flows
+> 🎨 Goal: Visualize sentence structure or grammar as trees/flows
 
-[ ] Generate tree from POS data
-[ ] Render as SVG using D3.js or simple canvas
-[ ] Link to sentence in vector DB
+* [ ] Generate tree from POS data
+* [ ] Render as SVG using D3.js or simple canvas
+* [ ] Link to sentence in vector DB
 
-🧰 Total Model Memory Overview
+---
+
+## 🧰 Total Model Memory Overview
 
 | Model / Tool                      | Task                 | RAM (CPU)  | VRAM (GPU) |
 | --------------------------------- | -------------------- | ---------- | ---------- |
@@ -150,6 +167,6 @@ Korean TTS models available in piper
 | `phi-2`                           | LLM (small)          | \~3–4 GB   | \~2–3 GB   |
 | `whisper.cpp (base)`              | Speech recognition   | \~2 GB     | \~1.5 GB   |
 | `piper`                           | TTS                  | \~0.5–1 GB | \~0.5–1 GB |
-| `KoNLPy + Okt`                    | Korean NLP           | \~1 GB     | N/A        |
+| KoNLPy + Okt                      | Korean NLP           | \~1 GB     | N/A        |
 | `awesome-align`                   | Token alignment      | \~2–3 GB   | N/A        |
-| `ChromaDB`                        | Vector DB            | \~1 GB     | N/A        |
+| ChromaDB                          | Vector DB            | \~1 GB     | N/A        |
