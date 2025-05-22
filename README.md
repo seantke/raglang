@@ -20,13 +20,13 @@
 - [ ] Translation model
   - [ ] facebook/nllb-200-distilled-600M — multilingual, small Memory: ~2.5 GB VRAM, ~5–6 GB RAM
   - [ ] OR Helsinki-NLP/opus-mt-en-ko — faster, smaller Memory: ~1–2 GB RAM
-- Tokenization + POS tagging
+- [ ] Tokenization + POS tagging
   - [ ] English: spaCy en_core_web_sm
   - [ ] Korean: KoNLPy + Okt or Mecab
   - [ ] Optional: khaiii or stanza for richer morphology (RAM: 1–2 GB)
 - [ ] Word alignment
   - [ ] Use awesome-align or heuristics with attention matrix
-- Optional: Fine-tune later if needed
+- [ ] Optional: Fine-tune later if needed
 
 ## ✅ Phase 2: Add Local Vector Store (ChromaDB)
 
@@ -150,6 +150,6 @@ Korean TTS models available in piper
 | `phi-2`                           | LLM (small)          | \~3–4 GB   | \~2–3 GB   |
 | `whisper.cpp (base)`              | Speech recognition   | \~2 GB     | \~1.5 GB   |
 | `piper`                           | TTS                  | \~0.5–1 GB | \~0.5–1 GB |
-| KoNLPy + Okt                      | Korean NLP           | \~1 GB     | N/A        |
+| `KoNLPy + Okt`                    | Korean NLP           | \~1 GB     | N/A        |
 | `awesome-align`                   | Token alignment      | \~2–3 GB   | N/A        |
-| ChromaDB                          | Vector DB            | \~1 GB     | N/A        |
+| `ChromaDB`                        | Vector DB            | \~1 GB     | N/A        |
